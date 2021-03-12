@@ -8,7 +8,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSmFrdWIiL
 
 ########################################
 
-POST http://localhost:3030/users
+POST http://localhost:3030/sign-up
 Content-Type: application/json
 
 {

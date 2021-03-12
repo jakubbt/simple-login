@@ -14,6 +14,7 @@ app.use(express.json())
 type userType = {
   name: string;
   password: string;
+  token?: string;
 }
 
 type postType = {
@@ -36,7 +37,8 @@ const posts: FC<postType[]> = [
   },
 ]
 
-//routes
+//ROUTES
+//get
 app.get('/users', (req: any, res: any) => {
   res.json(users)
 })
@@ -45,15 +47,22 @@ app.get('/posts', authenticateToken ,(req: any, res: any) => {
   res.json(posts.filter(post => post.name === req.user.name))
 })
 
-app.post('/users', async (req, res) => {
-  try {
-    const hashedPassowrd = await bcrypt.hash(req.body.password, 10)
-
-    const user = { name: req.body.name, password: hashedPassowrd }
-    users.push(user)
-    res.status(201).send()
-  } catch {
-    res.status(500).send()
+//post
+app.post('/sign-up', async (req, res) => {
+  const userNames = users.map(user => user.name)
+  const nameIsTaken = userNames.includes(req.body.name)
+  if (nameIsTaken) {
+    return res.status(400).send('Username is taken')
+  } else {
+    try {
+      const hashedPassowrd = await bcrypt.hash(req.body.password, 10)
+  
+      const user = { name: req.body.name, password: hashedPassowrd }
+      users.push(user)
+      res.status(201).send()
+    } catch {
+      res.status(500).send()
+    }
   }
 })
 
@@ -66,7 +75,7 @@ app.post('/users/login', async (req: any, res: any) => {
     if (await bcrypt.compare(req.body.password, user.password)) {
       res.status(200)
       const username = req.body.name
-      const user = { name: username}
+      const user = { name: username }
 
       const userAccessToken = jwt.sign(user, process.env.JWT_SECRET)
       res.json({ accessToken: userAccessToken})
@@ -76,14 +85,6 @@ app.post('/users/login', async (req: any, res: any) => {
   } catch {
     res.status(500).send('No user')
   }
-})
-
-app.post('/login', async (req: any, res: any) => {
-  const username = req.body.name
-  const user = { name: username}
-
-  const userAccessToken = jwt.sign(user, process.env.JWT_SECRET)
-  res.json({ accessToken: userAccessToken})
 })
 
 function authenticateToken(req: any, res: any, next: () => void): void {
