@@ -48,8 +48,8 @@ app.get('/posts', authenticateToken ,(req: any, res: any) => {
 })
 
 //post
-app.post('/sign-up', async (req, res) => {
-  const userNames = users.map(user => user.name)
+app.post('/sign-up', async (req: any, res: any) => {
+  const userNames = users.map((user: userType) => user.name)
   const nameIsTaken = userNames.includes(req.body.name)
   if (nameIsTaken) {
     return res.status(400).send('Username is taken')
