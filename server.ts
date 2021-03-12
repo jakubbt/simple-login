@@ -3,20 +3,44 @@ import { FC } from 'fc'
 const express = require('express')
 const app = express()
 const bcrypt = require('bcrypt')
+require('dotenv').config()
 
-//const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken')
 
 app.use(express.json())
 
+
+//types
 type userType = {
   name: string;
   password: string;
 }
 
-const users: FC<userType[]> = []
+type postType = {
+  title: string;
+  id: number;
+}
 
+//dummy data
+const users: FC<userType[]> = []
+const posts: FC<postType[]> = [
+  {
+    title: 'Post 1',
+    id: 1,
+  },
+  {
+    title: 'Post 2',
+    id: 2,
+  },
+]
+
+//routes
 app.get('/users', (req, res) => {
   res.json(users)
+})
+
+app.get('/posts', (req, res) => {
+  res.json(posts)
 })
 
 app.post('/users', async (req, res) => {
@@ -32,7 +56,7 @@ app.post('/users', async (req, res) => {
 })
 
 app.post('/users/login', async (req, res) => {
-  const user = users.find(user => user.name = req.body.name)
+  /* const user = users.find(user => user.name = req.body.name)
   if (user === null) {
     return res.status(400).send('Cannot find user')
   }
@@ -44,7 +68,17 @@ app.post('/users/login', async (req, res) => {
     }
   } catch {
     res.status(500).seend()
-  }
+  } */
+
+  const username = req.body.username
+  const user = { name: username}
+
+  const userAccessToken = jwt.sign(user, process.env.JWT_SECRET)
+  res.json({ accessToken: userAccessToken})
 })
+
+function authenticateToken(req, res, next): void {
+
+}
 
 app.listen(3030)
