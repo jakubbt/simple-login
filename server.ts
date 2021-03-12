@@ -26,21 +26,23 @@ const users: FC<userType[]> = []
 const posts: FC<postType[]> = [
   {
     title: 'Post 1',
+    name: "Jakub",
     id: 1,
   },
   {
     title: 'Post 2',
+    name: "someoneelse",
     id: 2,
   },
 ]
 
 //routes
-app.get('/users', (req, res) => {
+app.get('/users', (req: any, res: any) => {
   res.json(users)
 })
 
-app.get('/posts', (req, res) => {
-  res.json(posts)
+app.get('/posts', authenticateToken ,(req: any, res: any) => {
+  res.json(posts.filter(post => post.name === req.user.name))
 })
 
 app.post('/users', async (req, res) => {
@@ -55,30 +57,46 @@ app.post('/users', async (req, res) => {
   }
 })
 
-app.post('/users/login', async (req, res) => {
-  /* const user = users.find(user => user.name = req.body.name)
+app.post('/users/login', async (req: any, res: any) => {
+  const user = users.find(user => user.name = req.body.name)
   if (user === null) {
     return res.status(400).send('Cannot find user')
   }
   try {
     if (await bcrypt.compare(req.body.password, user.password)) {
-      res.send('Success')
+      res.status(200)
+      const username = req.body.name
+      const user = { name: username}
+
+      const userAccessToken = jwt.sign(user, process.env.JWT_SECRET)
+      res.json({ accessToken: userAccessToken})
     } else {
       res.send('Wrong password')
     }
   } catch {
-    res.status(500).seend()
-  } */
+    res.status(500).send('No user')
+  }
+})
 
-  const username = req.body.username
+app.post('/login', async (req: any, res: any) => {
+  const username = req.body.name
   const user = { name: username}
 
   const userAccessToken = jwt.sign(user, process.env.JWT_SECRET)
   res.json({ accessToken: userAccessToken})
 })
 
-function authenticateToken(req, res, next): void {
+function authenticateToken(req: any, res: any, next: () => void): void {
+  const authHeader = req.headers['authorization']
+  const token = authHeader && authHeader.split(' ')[1]
 
+  if (token === null) return res.sendStatus(401)
+
+  jwt.verify(token, process.env.JWT_SECRET, (err: any, user: userType) => {
+    if (err) return res.sendStatus(403)
+    req.user = user
+    next()
+  })
 }
 
 app.listen(3030)
