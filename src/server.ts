@@ -78,8 +78,8 @@ function generateAuthToken(user: object) {
 
 app.post('/users/login', async (req: any, res: any) => {
   const users = await database.select('*').from('users')
-  const user = users.find(user => user.name = req.body.name)
-  if (user === null) {
+  const user = users.find((user: userType) => user.name === req.body.name)
+  if (typeof user === 'undefined') {
     return res.status(400).send('Cannot find user')
   }
   try {
@@ -102,7 +102,7 @@ app.post('/users/login', async (req: any, res: any) => {
       res.send('Wrong password')
     }
   } catch {
-    res.status(500).send('No user')
+    res.status(500).send('Something went wrong')
   }
 })
 
