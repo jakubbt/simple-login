@@ -37,3 +37,19 @@ Content-Type: application/json
 }
 
 ########################################
+
+POST http://localhost:3030/token
+Content-Type: application/json
+
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSmFrdWIiLCJpYXQiOjE2MTU3Mzc2OTV9.ZC-yK1u1_xTR8eIme483xpZvRxeR9QqeyvOhN2rGwrg"
+}
+
+########################################
+
+POST http://localhost:3030/sign-out
+Content-Type: application/json
+
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSmFrdWIiLCJpYXQiOjE2MTU3Mzc2OTV9.ZC-yK1u1_xTR8eIme483xpZvRxeR9QqeyvOhN2rGwrg"
+}

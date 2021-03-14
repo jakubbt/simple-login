@@ -87,6 +87,31 @@ app.post('/sign-up', async (req: any, res: any) => {
   }
 })
 
+app.post('/token', async (req: any, res: any) => {
+  const refreshTokens = await (await database.select('*').from('refreshTokens')).map(row => row.token)
+  const refreshToken = req.body.token
+
+  if (refreshToken.length === 0) return res.status(401).send('No token provided')
+  if (!refreshTokens.includes(refreshToken)) return res.status(403).send('Invalid token')
+  
+  jwt.verify(refreshToken, process.env.REFRESH_JWT_TOKEN, (e: any, user: userType) => {
+    if (e) return res.sendStatus(403)
+    
+    const accessToken = generateAuthToken({ name: user.name })
+    res.json({ accessToken })
+  })
+})
+
+app.post('/sign-out', async (req: any, res: any) => {
+  const refreshToken = req.body.token
+  try {
+    res.sendStatus(200)
+    return database.table('refreshTokens').where('token', refreshToken).del()
+  } catch {
+    res.sendStatus(500)
+  }
+})
+
 async function start(): Promise<void> {
   try {
     if ('migrations' in config.database) {
