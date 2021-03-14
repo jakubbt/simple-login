@@ -87,6 +87,16 @@ app.post('/sign-up', async (req: any, res: any) => {
   }
 })
 
+app.post('/sign-out', async (req: any, res: any) => {
+  const refreshToken = req.body.token
+  try {
+    res.sendStatus(200)
+    return database.table('refreshTokens').where('token', refreshToken).del()
+  } catch {
+    res.sendStatus(500)
+  }
+})
+
 app.post('/token', async (req: any, res: any) => {
   const refreshTokens = await (await database.select('*').from('refreshTokens')).map(row => row.token)
   const refreshToken = req.body.token
@@ -100,16 +110,6 @@ app.post('/token', async (req: any, res: any) => {
     const accessToken = generateAuthToken({ name: user.name })
     res.json({ accessToken })
   })
-})
-
-app.post('/sign-out', async (req: any, res: any) => {
-  const refreshToken = req.body.token
-  try {
-    res.sendStatus(200)
-    return database.table('refreshTokens').where('token', refreshToken).del()
-  } catch {
-    res.sendStatus(500)
-  }
 })
 
 async function start(): Promise<void> {
