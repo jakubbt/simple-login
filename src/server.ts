@@ -1,71 +1,39 @@
-import { FC } from 'fc'
 import config from './config'
 import database from './database'
+import { generateAuthToken } from './utils/generateAuthToken'
 import { userType } from './types/user'
 import { postType } from './types/post'
-
 import { authenticateToken } from './middlewares/authenticateToken'
 
 const express = require('express')
 const app = express()
-const bcrypt = require('bcrypt')
 require('dotenv').config()
-
+const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 app.use(express.json())
 
-//dummy data
-const posts: FC<postType[]> = [
-  {
-    title: 'Post 1',
-    name: "Jakub",
-    id: 1,
-  },
-  {
-    title: 'Post 2',
-    name: "someoneelse",
-    id: 2,
-  },
-]
-
-//ROUTES
-//get
 app.get('/users', async (req: any, res: any) => {
   const users = await database.select('*').from('users')
   res.json(users)
 })
 
-app.get('/posts', authenticateToken ,(req: any, res: any) => {
-  res.json(posts.filter(post => post.name === req.user.name))
+app.get('/posts', authenticateToken, async (req: any, res: any) => {
+  const posts = await database.select('*').from('posts')
+  res.json(posts.filter(post => post.author === req.user.name))
 })
 
-//post
-app.post('/sign-up', async (req: any, res: any) => {
-  const users = await database.select('*').from('users')
-  const userNames = users.map((user: userType) => user.name)
-  const nameIsTaken = userNames.includes(req.body.name)
-  if (nameIsTaken) {
-    return res.status(400).send('Username is taken')
-  } else {
-    try {
-      const hashedPassowrd = await bcrypt.hash(req.body.password, 10)
-
-      res.status(201).send()
-      
-      return database.insert({
-        name: req.body.name,
-        password: hashedPassowrd
-      }).into('users')
-    } catch {
-      res.status(500).send()
-    }
+app.post('/create-post', async (req: any, res: any) => {
+  try {
+    res.status(200).send()
+    return database.insert({
+      author: req.body.author,
+      title: req.body.title
+    }).into('posts')
+  } catch {
+    res.status(500).send('Something went wrong')
   }
 })
-
-function generateAuthToken(user: object) {
-  return jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '15s'})
-}
 
 app.post('/login', async (req: any, res: any) => {
   const users = await database.select('*').from('users')
@@ -94,6 +62,28 @@ app.post('/login', async (req: any, res: any) => {
     }
   } catch {
     res.status(500).send('Something went wrong')
+  }
+})
+
+app.post('/sign-up', async (req: any, res: any) => {
+  const users = await database.select('*').from('users')
+  const userNames = users.map((user: userType) => user.name)
+  const nameIsTaken = userNames.includes(req.body.name)
+  if (nameIsTaken) {
+    return res.status(400).send('Username is taken')
+  } else {
+    try {
+      const hashedPassowrd = await bcrypt.hash(req.body.password, 10)
+
+      res.status(201).send()
+      
+      return database.insert({
+        name: req.body.name,
+        password: hashedPassowrd
+      }).into('users')
+    } catch {
+      res.status(500).send()
+    }
   }
 })
 

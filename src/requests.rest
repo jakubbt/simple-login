@@ -4,7 +4,7 @@ GET http://localhost:3030/users
 ########################################
 
 GET http://localhost:3030/posts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSmFrdWIiLCJpYXQiOjE2MTU2MjQyMDYsImV4cCI6MTYxNTYyNDIyMX0.QupveVVfQaNdKjqj2rqFDVSePo_jXDz_1Zl-rEDBnqU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSmFrdWIiLCJpYXQiOjE2MTU3MzY4OTksImV4cCI6MTYxNTczNzQ5OX0.YGKaNTuAxbcp5Hk2gZv4eiT6zC0d1V0BPLVhXr7ApmM
 
 ########################################
 
@@ -12,7 +12,7 @@ POST http://localhost:3030/sign-up
 Content-Type: application/json
 
 {
-  "name": "Anežka",
+  "name": "Jakub",
   "password": "password"
 }
 
@@ -28,9 +28,12 @@ Content-Type: application/json
 
 ########################################
 
-POST  http://localhost:3030/token
+POST  http://localhost:3030/create-post
 Content-Type: application/json
 
 {
-  "token": ""
+  "author": "Jožino",
+  "title": "Post 5"
 }
+
+########################################
