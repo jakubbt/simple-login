@@ -76,7 +76,7 @@ function generateAuthToken(user: object) {
   return jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '15s'})
 }
 
-app.post('/users/login', async (req: any, res: any) => {
+app.post('/login', async (req: any, res: any) => {
   const users = await database.select('*').from('users')
   const user = users.find((user: userType) => user.name === req.body.name)
   if (typeof user === 'undefined') {
