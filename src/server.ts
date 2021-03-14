@@ -1,4 +1,6 @@
 import { FC } from 'fc'
+import config from './config';
+import database from './database';
 
 const express = require('express')
 const app = express()
@@ -9,9 +11,9 @@ const jwt = require('jsonwebtoken')
 
 app.use(express.json())
 
-
 //types
 type userType = {
+  id: number,
   name: string;
   password: string;
   token?: string;
@@ -23,7 +25,6 @@ type postType = {
 }
 
 //dummy data
-const users: FC<userType[]> = []
 const posts: FC<postType[]> = [
   {
     title: 'Post 1',
@@ -39,7 +40,8 @@ const posts: FC<postType[]> = [
 
 //ROUTES
 //get
-app.get('/users', (req: any, res: any) => {
+app.get('/users', async (req: any, res: any) => {
+  const users = await database.select('*').from('users')
   res.json(users)
 })
 
@@ -49,6 +51,7 @@ app.get('/posts', authenticateToken ,(req: any, res: any) => {
 
 //post
 app.post('/sign-up', async (req: any, res: any) => {
+  const users = await database.select('*').from('users')
   const userNames = users.map((user: userType) => user.name)
   const nameIsTaken = userNames.includes(req.body.name)
   if (nameIsTaken) {
@@ -56,10 +59,13 @@ app.post('/sign-up', async (req: any, res: any) => {
   } else {
     try {
       const hashedPassowrd = await bcrypt.hash(req.body.password, 10)
-  
-      const user = { name: req.body.name, password: hashedPassowrd }
-      users.push(user)
+
       res.status(201).send()
+      
+      return database.insert({
+        name: req.body.name,
+        password: hashedPassowrd
+      }).into('users')
     } catch {
       res.status(500).send()
     }
@@ -71,6 +77,7 @@ function generateAuthToken(user: object) {
 }
 
 app.post('/users/login', async (req: any, res: any) => {
+  const users = await database.select('*').from('users')
   const user = users.find(user => user.name = req.body.name)
   if (user === null) {
     return res.status(400).send('Cannot find user')
@@ -83,10 +90,14 @@ app.post('/users/login', async (req: any, res: any) => {
 
       const userAccessToken = generateAuthToken(user)
       const refreshToken = jwt.sign(user, process.env.REFRESH_JWT_TOKEN)
+
       res.json({
         accessToken: userAccessToken,
-        refreshToken: refreshToken
       })
+
+      return database.insert({
+        token: refreshToken
+      }).into('refreshTokens')
     } else {
       res.send('Wrong password')
     }
@@ -108,4 +119,18 @@ function authenticateToken(req: any, res: any, next: () => void): void {
   })
 }
 
-app.listen(3030)
+async function start(): Promise<void> {
+  try {
+    if ('migrations' in config.database) {
+      await database.migrate.latest({ directory: config.database.migrations.directory });
+    }
+
+    app.listen(process.env.PORT, () => {
+      console.log(`Server started at http://localhost:${ process.env.PORT }`)
+    });
+  } catch(error) {
+    process.exit(1)
+  }
+}
+
+start()

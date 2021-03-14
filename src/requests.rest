@@ -4,7 +4,7 @@ GET http://localhost:3030/users
 ########################################
 
 GET http://localhost:3030/posts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSmFrdWIiLCJpYXQiOjE2MTU1OTE0NjgsImV4cCI6MTYxNTU5MTQ4M30.cX7XMyVBGrxZH79rXw7KMUsSRRXrZSKNqL4xIgtHa9Y
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSmFrdWIiLCJpYXQiOjE2MTU2MjQyMDYsImV4cCI6MTYxNTYyNDIyMX0.QupveVVfQaNdKjqj2rqFDVSePo_jXDz_1Zl-rEDBnqU
 
 ########################################
 
@@ -12,7 +12,7 @@ POST http://localhost:3030/sign-up
 Content-Type: application/json
 
 {
-  "name": "Jakub",
+  "name": "Jakub 2",
   "password": "password"
 }
 
