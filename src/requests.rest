@@ -22,6 +22,15 @@ POST http://localhost:3030/login
 Content-Type: application/json
 
 {
-  "name": "Jakuaaaaab",
+  "name": "Jakub",
   "password": "password"
+}
+
+########################################
+
+POST  http://localhost:3030/token
+Content-Type: application/json
+
+{
+  "token": ""
 }

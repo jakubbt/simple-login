@@ -1,6 +1,10 @@
 import { FC } from 'fc'
-import config from './config';
-import database from './database';
+import config from './config'
+import database from './database'
+import { userType } from './types/user'
+import { postType } from './types/post'
+
+import { authenticateToken } from './middlewares/authenticateToken'
 
 const express = require('express')
 const app = express()
@@ -10,19 +14,6 @@ require('dotenv').config()
 const jwt = require('jsonwebtoken')
 
 app.use(express.json())
-
-//types
-type userType = {
-  id: number,
-  name: string;
-  password: string;
-  token?: string;
-}
-
-type postType = {
-  title: string;
-  id: number;
-}
 
 //dummy data
 const posts: FC<postType[]> = [
@@ -105,19 +96,6 @@ app.post('/login', async (req: any, res: any) => {
     res.status(500).send('Something went wrong')
   }
 })
-
-function authenticateToken(req: any, res: any, next: () => void): void {
-  const authHeader = req.headers['authorization']
-  const token = authHeader && authHeader.split(' ')[1]
-
-  if (token === null) return res.sendStatus(401)
-
-  jwt.verify(token, process.env.JWT_SECRET, (err: any, user: userType) => {
-    if (err) return res.sendStatus(403)
-    req.user = user
-    next()
-  })
-}
 
 async function start(): Promise<void> {
   try {
