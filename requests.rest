@@ -4,7 +4,7 @@ GET http://localhost:3030/users
 ########################################
 
 GET http://localhost:3030/posts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSmFrdWIiLCJpYXQiOjE2MTU1ODkzNjF9.lvKrHNWzly8WoKJFnyGRiU3j0f0Cp6S1qvbTJziIzpE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSmFrdWIiLCJpYXQiOjE2MTU1OTE0NjgsImV4cCI6MTYxNTU5MTQ4M30.cX7XMyVBGrxZH79rXw7KMUsSRRXrZSKNqL4xIgtHa9Y
 
 ########################################
 

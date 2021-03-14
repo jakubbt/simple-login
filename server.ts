@@ -66,6 +66,10 @@ app.post('/sign-up', async (req: any, res: any) => {
   }
 })
 
+function generateAuthToken(user: object) {
+  return jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '15s'})
+}
+
 app.post('/users/login', async (req: any, res: any) => {
   const user = users.find(user => user.name = req.body.name)
   if (user === null) {
@@ -77,8 +81,12 @@ app.post('/users/login', async (req: any, res: any) => {
       const username = req.body.name
       const user = { name: username }
 
-      const userAccessToken = jwt.sign(user, process.env.JWT_SECRET)
-      res.json({ accessToken: userAccessToken})
+      const userAccessToken = generateAuthToken(user)
+      const refreshToken = jwt.sign(user, process.env.REFRESH_JWT_TOKEN)
+      res.json({
+        accessToken: userAccessToken,
+        refreshToken: refreshToken
+      })
     } else {
       res.send('Wrong password')
     }
