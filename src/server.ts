@@ -2,7 +2,6 @@ import config from './config'
 import database from './database'
 import { generateAuthToken } from './utils/generateAuthToken'
 import { userType } from './types/user'
-import { postType } from './types/post'
 import { authenticateToken } from './middlewares/authenticateToken'
 
 const express = require('express')
