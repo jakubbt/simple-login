@@ -96,10 +96,10 @@ app.post('/sign-out', async (req: any, res: any) => {
 
 app.post('/token', async (req: any, res: any) => {
   const refreshToken = req.body.token
-  const refreshTokensFromDb = await database.select().from('refreshTokens').where('token', refreshToken).first()
+  const refreshTokenFromDb = await database.select().from('refreshTokens').where('token', refreshToken).first()
 
   if (refreshToken.length === 0) return res.status(401).send('No token provided')
-  if (typeof refreshTokensFromDb === 'undefined') return res.status(403).send('Invalid token')
+  if (typeof refreshTokenFromDb === 'undefined') return res.status(403).send('Invalid token')
   
   jwt.verify(refreshToken, process.env.REFRESH_JWT_TOKEN, (e: any, user: userType) => {
     if (e) return res.sendStatus(403)
