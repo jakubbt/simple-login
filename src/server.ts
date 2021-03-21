@@ -18,8 +18,8 @@ app.get('/users', async (req: any, res: any) => {
 })
 
 app.get('/posts', authenticateToken, async (req: any, res: any) => {
-  const posts = await database.select('*').from('posts')
-  res.json(posts.filter(post => post.author === req.user.name))
+  const posts = await database.select('*').from('posts').where('author', req.user.name)
+  res.json(posts)
 })
 
 app.post('/create-post', async (req: any, res: any) => {
