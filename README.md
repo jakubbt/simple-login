@@ -18,7 +18,7 @@ Run the project:
 npm start
 ```
 
-Create `.rest` file to run requests in editor or connect use [http://localhost:3030/](http://localhost:3030/) as endpoint.
+Create `.rest` file to run requests in editor or use [http://localhost:3030/](http://localhost:3030/) as endpoint.
 
 ## Examples 
 
