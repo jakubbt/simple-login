@@ -13,8 +13,39 @@ const jwt = require('jsonwebtoken')
 app.use(express.json())
 
 app.get('/users', async (req: any, res: any) => {
-  const users = await database.select('*').from('users')
-  res.json(users)
+  const page = parseInt(req.query.page)
+  const limit = parseInt(req.query.limit)
+  
+  const startingPosition = (page - 1) * limit
+  const endingPosition = page * limit
+  
+  const users = await database.select('*').from('users').limit(limit).offset(startingPosition)
+  const count = await database.count({ count: '*' }).from('users').first().then(result => result.count)
+  
+  const pageInfo: any = {};
+
+  pageInfo.hasNextPage = endingPosition < count
+  pageInfo.hasPrevPage = startingPosition > 0
+
+  if(endingPosition < count) {
+    pageInfo.next = {
+      page: page + 1,
+      limit: limit
+    }
+  }
+  if(startingPosition > 0) {
+    pageInfo.prev = {
+      page: page - 1,
+      limit: limit
+    }
+  }
+
+  const data: any = {}
+
+  data.results = users
+  data.pageInfo = pageInfo
+
+  res.json(data)
 })
 
 app.get('/posts', authenticateToken, async (req: any, res: any) => {
