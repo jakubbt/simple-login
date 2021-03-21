@@ -33,6 +33,7 @@ app.get('/users', async (req: any, res: any) => {
       limit: limit
     }
   }
+  
   if(startingPosition > 0) {
     pageInfo.prev = {
       page: page - 1,
