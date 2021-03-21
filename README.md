@@ -22,9 +22,9 @@ Create `.rest` file to run requests in editor or connect use [http://localhost:3
 
 ## Examples 
 
-### List all users
+### List users
 ```rest
-GET http://localhost:3030/users?page=2&limit=1
+GET http://localhost:3030/users?page=1&limit=5
 ```
 
 ### Create user
