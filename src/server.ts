@@ -18,11 +18,11 @@ app.get('/users', async (req: any, res: any) => {
 })
 
 app.get('/posts', authenticateToken, async (req: any, res: any) => {
-  const posts = await database.select('*').from('posts').where('author', req.user.name)
+  const posts = await database.select().from('posts').where('author', req.user.name)
   res.json(posts)
 })
 
-app.post('/create-post', async (req: any, res: any) => {
+app.post('/posts', async (req: any, res: any) => {
   try {
     res.status(200).send()
     return database.insert({
@@ -35,8 +35,7 @@ app.post('/create-post', async (req: any, res: any) => {
 })
 
 app.post('/login', async (req: any, res: any) => {
-  const users = await database.select('*').from('users')
-  const user = users.find((user: userType) => user.name === req.body.name)
+  const user: any = await database.select().from('users').where('name', req.body.name).first()
   if (typeof user === 'undefined') {
     return res.status(400).send('Cannot find user')
   }
@@ -65,9 +64,8 @@ app.post('/login', async (req: any, res: any) => {
 })
 
 app.post('/sign-up', async (req: any, res: any) => {
-  const users = await database.select('*').from('users')
-  const userNames = users.map((user: userType) => user.name)
-  const nameIsTaken = userNames.includes(req.body.name)
+  const userName = await database.select().from('users').where('name', req.body.name).first()
+  const nameIsTaken = typeof userName !== 'undefined'
   if (nameIsTaken) {
     return res.status(400).send('Username is taken')
   } else {
@@ -97,11 +95,11 @@ app.post('/sign-out', async (req: any, res: any) => {
 })
 
 app.post('/token', async (req: any, res: any) => {
-  const refreshTokens = await (await database.select('*').from('refreshTokens')).map(row => row.token)
   const refreshToken = req.body.token
+  const refreshTokensFromDb = await database.select().from('refreshTokens').where('token', refreshToken).first()
 
   if (refreshToken.length === 0) return res.status(401).send('No token provided')
-  if (!refreshTokens.includes(refreshToken)) return res.status(403).send('Invalid token')
+  if (typeof refreshTokensFromDb === 'undefined') return res.status(403).send('Invalid token')
   
   jwt.verify(refreshToken, process.env.REFRESH_JWT_TOKEN, (e: any, user: userType) => {
     if (e) return res.sendStatus(403)
